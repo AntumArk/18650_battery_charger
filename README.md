@@ -14,11 +14,11 @@ All the 18650 battery chargers that can be found from AliExpress have serious de
 1. On-board 18650 battery holder able to fit standard 18650 and modified one;
 2. USB Type C power input port;
 3. **Reverse-polarity protection** for the 18650 battery path (P-channel MOSFET ideal-diode, low loss);
-4. Battery protection for standard 18650 battery;
+4. Battery protection support for standard (unprotected) 18650 battery;
 5. Load-sharing circuitry so it can power the load while charging;
 6. Boost/Buck converter capable to deliver 500mA power with either 3.3V or 5V output;
 7. Low quiescent current for IoT application;
-8. Optional DW01A-based protection-controller interface for unprotected cells;
+8. Optional DW01A-based protection-controller interface for unprotected cells (with external dual-MOSFET stage);
 9. Optional software-latch control header.
 
 ## Reverse-polarity protection
@@ -34,7 +34,7 @@ J2 (18650+)  ─── Drain ──[Q2 P-MOSFET]── Source ─── BAT+ rai
                                GND
 ```
 
-Pin mapping for AO3407 SOT-23: **pin 1 = Gate**, **pin 2 = Source** (→ BAT+ rail / charger circuit), **pin 3 = Drain** (→ J2 18650+ holder).
+Pin mapping for AO3407 SOT-23: **pin 1 = Gate**, **pin 2 = Source** (→ internal BAT+ rail feeding charger/load circuitry), **pin 3 = Drain** (→ J2 18650+ holder).
 
 - **Correct insertion:** the PMOS body diode (anode = Drain, cathode = Source) is forward-biased, allowing current from the battery to the circuit. As the Source voltage rises, V_GS drops below V_th (≈ −2.5 V) and the low-R_DS(on) channel turns on.
 - **Reverse insertion:** the body diode is reverse-biased and V_GS ≈ 0 V > V_th, so the MOSFET stays off and no current flows — the entire circuit is protected.
@@ -49,7 +49,7 @@ An optional **DW01A** block (`U3`) is included in the schematic for users who do
 The block exposes:
 
 - raw battery input pads (`J6`, `J7`);
-- DW01A control/sense breakout pads (`J8`..`J11`) for pairing with an external dual-MOSFET protection stage (for example FS8205A implementation).
+- DW01A control/sense breakout pads (`J8`..`J11`) for pairing with an external dual-MOSFET protection stage (for example FS8205A, a common dual-NMOS protection device used with DW01A).
 
 This keeps the base charger path unchanged while providing a dedicated integration point for cell protection logic.
 
