@@ -20,20 +20,22 @@ All the 18650 battery chargers that can be found from AliExpress have serious de
 7. Low quiescent current for IoT application.
 
 ## Reverse-polarity protection
-A high-side P-channel MOSFET (Q2, AO3407) is placed in series with the 18650+ terminal in an "ideal diode" configuration:
+A high-side P-channel MOSFET (Q2, AO3407, SOT-23) is placed in series with the 18650+ terminal in an "ideal diode" configuration:
 
 ```
-18650+  ──── Drain(Q2) Source(Q2) ──── BAT+ rail
-                         │
-                        Gate
-                         │
-                        R11 (100 kΩ)
-                         │
-                        GND
+J2 (18650+)  ─── Drain ──[Q2 P-MOSFET]── Source ─── BAT+ rail
+                                │
+                               Gate (pin 1)
+                                │
+                              R11 (100 kΩ)
+                                │
+                               GND
 ```
 
-- **Correct insertion:** the body diode conducts momentarily, charging the Source node. Once V_GS < V_th (≈ −2.5 V), the channel turns on with low R_DS(on), giving minimal voltage drop.
-- **Reverse insertion:** the body diode is reverse-biased and V_GS ≈ 0 V, so the MOSFET stays off and no current flows — the entire circuit is protected.
+Pin mapping for AO3407 SOT-23: **pin 1 = Gate**, **pin 2 = Source** (→ BAT+ rail / charger circuit), **pin 3 = Drain** (→ J2 18650+ holder).
+
+- **Correct insertion:** the PMOS body diode (anode = Drain, cathode = Source) is forward-biased, allowing current from the battery to the circuit. As the Source voltage rises, V_GS drops below V_th (≈ −2.5 V) and the low-R_DS(on) channel turns on.
+- **Reverse insertion:** the body diode is reverse-biased and V_GS ≈ 0 V > V_th, so the MOSFET stays off and no current flows — the entire circuit is protected.
 
 This approach has much lower loss than a series Schottky diode and is suitable for single-cell Li-ion voltages.
 
